@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+
+<head>
+  <meta name="author" content="Matthew Woo" />
+  <link href="css/styles.css" rel="stylesheet" type="text/css" /> 
+  <script type="text/javascript" src="./js/script.js"></script>
+  
+  <title>Doooo Math</title>
+</head>
+
+<body onload="init()">
+  <div id="box">
+    <div id="top" class="number right">
+    </div>
+    
+    <div class="clear">&nbsp;</div>
+    
+    <div id="op" class="number left">
+    </div>
+    <div id="bot" class="number right">
+    </div>
+    
+    <div class="clear">&nbsp;</div>
+    <hr>
+    
+    <div class="clear">&nbsp;</div>
+    
+    <input type="text" id="input" class="right" onkeydown="submit(event)" autofocus></input>
+    
+    <div class="clear">&nbsp;</div>
+    
+    <div id="result">
+      <div id="image" class="left"></div>
+      <div id="text" class="left"></div>
+    </div>
+  </div>
+</body>
+
+</html>
