@@ -1,3 +1,5 @@
+var errLog = true;
+
 var num1;
 var num2;
 var operand;
@@ -10,11 +12,20 @@ var maxTries = 3;
 var last;
 var restartFlag;
 
-var correct = './images/correct.png';
-var wrong = './images/wrong.png';
+function mark(name, link, width, height) {
+  this.name = name;
+  this.link = link;
+  this.width = width;
+  this.height = height;
+}
+
+var correct;
+var wrong;
+var divImage
+var imgHeight = 50;
 
 var init = function() {
-  console.log('init');
+  if(errLog) console.log('init');
   
   num1 = document.getElementById('top');
   num2 = document.getElementById('bot');
@@ -24,17 +35,23 @@ var init = function() {
   numTries = 0;
   last = -98779;
   
+  correct = new mark('correct', './images/correct.png', 446, 400);
+  wrong = new mark('wrong', './images/wrong.png', 350, 400);
+  divImage = document.getElementById('image');
+  divImage.style.width = '0px';
+  
   setOperand();
   initNums();
 };
 
 var restart = function() {
-  console.log('restart');
+  if(errLog) console.log('restart');
   
   if(restartFlag){
     initNums();
     clearResult();
     clearAnswer();
+    enableSubmit();
     result.focus();
     restartFlag = false;
     numTries = 0;
@@ -54,7 +71,7 @@ var rng = function() {
 };
 
 var setOperand = function() {
-  console.log('setOperand');
+  if(errLog) console.log('setOperand');
   
   operand.innerText = '+';
 };
@@ -72,9 +89,16 @@ var getNum = function(div) {
   return parseInt(div.innerText);
 };
 
+var getNumPx = function(str) {
+  console.log('getNumPx');
+  var w = str.substring(0, str.length-2);
+  w = parseInt(w);
+  return w;
+}
+
 // When the answer is submitted 
 var submit = function(event) {
-  console.log('submit');
+  if(errLog) console.log('submit');
   
   if(event.keyIdentifier === 'Enter') {
     var answer = input.value;
@@ -92,8 +116,22 @@ var submit = function(event) {
   }
 };
 
+var disableSubmit = function() {
+  if(errLog) console.log('disableSubmit');
+  var inputDiv = document.getElementById("inputDiv");
+  var val = input.value;
+  inputDiv.innerHTML = '<input type="text" id="input" class="right"></input>';
+  input.value = val;
+};
+
+var enableSubmit = function() {
+  if(errLog) console.log('enableSubmit');
+  var inputDiv = document.getElementById("inputDiv");
+  inputDiv.innerHTML = '<input type="text" id="input" class="right" onkeydown="submit(event)" autofocus></input>';
+};
+
 var isCorrect = function(input) {
-  console.log('isCorrect');
+  if(errLog) console.log('isCorrect');
   
   var answer = getNum(num1);
   answer += getNum(num2);
@@ -105,8 +143,10 @@ var isCorrect = function(input) {
 };
 
 var showCorrect = function() {
-  var divImage = document.getElementById('image');
-  divImage.innerHTML = '<img src="' + correct + '" height=50 />';
+  divImage.innerHTML += '<img src="' + correct.link + '" height=' + imgHeight + ' />';
+  var w = getNumPx(divImage.style.width);
+  w += Math.ceil(correct.width * (imgHeight / correct.height));
+  divImage.style.width = w + 'px';
   
   var divText = document.getElementById('text');
   var a = getNum(num1);
@@ -115,13 +155,17 @@ var showCorrect = function() {
   divText.innerHTML += '<br><button onclick="restart()">Ok!</button>';
   
   document.getElementsByTagName('button')[0].focus();
+  disableSubmit();
 };
 
 var showWrong = function() {
   numTries++;
   
   var divImage = document.getElementById('image');
-  divImage.innerHTML += '<img src="' + wrong + '" height=50 />';
+  divImage.innerHTML += '<img src="' + wrong.link + '" height=' + imgHeight + ' />';
+  var w = getNumPx(divImage.style.width);
+  w += Math.ceil(wrong.width * (imgHeight / wrong.height));
+  divImage.style.width = w + 'px';
 
   if( numTries >= maxTries ) {
     var divText = document.getElementById('text');
@@ -131,12 +175,14 @@ var showWrong = function() {
     divText.innerHTML += '<br><button onClick="restart()">I understand...</button>';
     
     document.getElementsByTagName('button')[0].focus();
+    disableSubmit();
   }
 };
 
 var clearResult = function() {
   var divImage = document.getElementById('image');
   divImage.innerHTML = '';
+  divImage.style.width = 0;
   
   var divText = document.getElementById('text');
   divText.innerHTML = '';
