@@ -8,6 +8,7 @@ var max = 12;
 var min = 0;
 var numTries;
 var maxTries = 3;
+var initLast = -3.33;
 
 var last;
 var restartFlag;
@@ -33,7 +34,7 @@ var init = function() {
   result = document.getElementById('input');
   restartFlag = false;
   numTries = 0;
-  last = -3.33;
+  last = initLast;
   
   correct = new mark('correct', './images/correct.png', 446, 400);
   wrong = new mark('wrong', './images/wrong.png', 350, 400);
@@ -56,6 +57,7 @@ var restart = function() {
     result.focus();
     restartFlag = false;
     numTries = 0;
+    last = initLast;
     
     return;
   }
@@ -191,7 +193,7 @@ var increaseSize = function(img,i,origWidth) {
   divImage.style.width = w + 'px';
   
   i += 0.05;
-  setTimeout( function() { increaseSize(img,i,origWidth) }, 0.1);
+  setTimeout( function() { increaseSize(img,i,origWidth) }, 1);
 }
 
 var clearResult = function() {
