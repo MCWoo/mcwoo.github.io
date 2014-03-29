@@ -33,12 +33,13 @@ var init = function() {
   result = document.getElementById('input');
   restartFlag = false;
   numTries = 0;
-  last = -98779;
+  last = -3.33;
   
   correct = new mark('correct', './images/correct.png', 446, 400);
   wrong = new mark('wrong', './images/wrong.png', 350, 400);
   divImage = document.getElementById('image');
   divImage.style.width = '0px';
+  divImage.style.height = imgHeight + 'px';
   
   setOperand();
   initNums();
@@ -90,7 +91,7 @@ var getNum = function(div) {
 };
 
 var getNumPx = function(str) {
-  console.log('getNumPx');
+  if(errLog) console.log('getNumPx');
   var w = str.substring(0, str.length-2);
   w = parseInt(w);
   return w;
@@ -103,7 +104,8 @@ var submit = function(event) {
   if(event.keyIdentifier === 'Enter') {
     var answer = input.value;
     answer = parseInt(answer);
-    if( isCorrect(answer) ) {
+    if( isNaN(answer) );
+    else if( isCorrect(answer) ) {
       showCorrect();
     }
     else {
@@ -114,21 +116,17 @@ var submit = function(event) {
       }
     }
   }
-};
+}
 
 var disableSubmit = function() {
   if(errLog) console.log('disableSubmit');
-  var inputDiv = document.getElementById("inputDiv");
-  var val = input.value;
-  inputDiv.innerHTML = '<input type="text" id="input" class="right"></input>';
-  input.value = val;
-};
+  input.onkeydown = null;
+}
 
 var enableSubmit = function() {
   if(errLog) console.log('enableSubmit');
-  var inputDiv = document.getElementById("inputDiv");
-  inputDiv.innerHTML = '<input type="text" id="input" class="right" onkeydown="submit(event)" autofocus></input>';
-};
+  input.onkeydown = function onkeydown(event) { submit(event) };
+}
 
 var isCorrect = function(input) {
   if(errLog) console.log('isCorrect');
@@ -143,10 +141,13 @@ var isCorrect = function(input) {
 };
 
 var showCorrect = function() {
-  divImage.innerHTML += '<img src="' + correct.link + '" height=' + imgHeight + ' />';
+  divImage.innerHTML += '<img src="' + correct.link + '" style="height:0px;" />';
+  
+  // Adjust div and image sizes
   var w = getNumPx(divImage.style.width);
-  w += Math.ceil(correct.width * (imgHeight / correct.height));
-  divImage.style.width = w + 'px';
+  var img = divImage.getElementsByTagName('img');
+  img = img[img.length-1];
+  increaseSize(img, 0, w);
   
   var divText = document.getElementById('text');
   var a = getNum(num1);
@@ -156,16 +157,17 @@ var showCorrect = function() {
   
   document.getElementsByTagName('button')[0].focus();
   disableSubmit();
-};
+}
 
 var showWrong = function() {
   numTries++;
+  divImage.innerHTML += '<img src="' + wrong.link + '" style="height:0px;" />';  
   
-  var divImage = document.getElementById('image');
-  divImage.innerHTML += '<img src="' + wrong.link + '" height=' + imgHeight + ' />';
+  // Adjust div size and image size
   var w = getNumPx(divImage.style.width);
-  w += Math.ceil(wrong.width * (imgHeight / wrong.height));
-  divImage.style.width = w + 'px';
+  var img = divImage.getElementsByTagName('img');
+  img = img[img.length-1];
+  increaseSize(img, 0, w);
 
   if( numTries >= maxTries ) {
     var divText = document.getElementById('text');
@@ -177,7 +179,20 @@ var showWrong = function() {
     document.getElementsByTagName('button')[0].focus();
     disableSubmit();
   }
-};
+}
+
+var increaseSize = function(img,i,origWidth) {
+  if(errLog) console.log('increaseSize');
+  if( i > 1 )
+    return;
+  img.style.height = imgHeight * Math.sqrt(i) + 'px';
+  
+  var w = origWidth + Math.ceil(img.width * (imgHeight / img.height));
+  divImage.style.width = w + 'px';
+  
+  i += 0.05;
+  setTimeout( function() { increaseSize(img,i,origWidth) }, 0.1);
+}
 
 var clearResult = function() {
   var divImage = document.getElementById('image');
@@ -191,3 +206,6 @@ var clearResult = function() {
 var clearAnswer = function() {
   result.value = '';
 }
+
+
+window.onload = init;
